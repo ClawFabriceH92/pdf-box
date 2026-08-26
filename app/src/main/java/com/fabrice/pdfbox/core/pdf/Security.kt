@@ -43,7 +43,6 @@ object Security {
             if (doc.isEncrypted) doc.isAllSecurityToBeRemoved = true
             val access = AccessPermission().apply {
                 setCanPrint(permissions.canPrint)
-                setCanPrintDegraded(permissions.canPrint)
                 setCanExtractContent(permissions.canExtractContent)
                 setCanExtractForAccessibility(true)
                 setCanModify(permissions.canModify)

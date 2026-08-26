@@ -142,6 +142,9 @@ android {
         checkReleaseBuilds = true
         checkDependencies = false
         htmlReport = true
+        // Sans cela, la console n'affiche que la *première* erreur : corriger
+        // un rapport de dix défauts demanderait dix builds.
+        textReport = true
         // La bibliothèque ML Kit publie des versions plus récentes que celles
         // épinglées ici ; la mise à jour est le travail de Dependabot, pas une
         // raison de faire échouer le build.

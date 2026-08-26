@@ -21,20 +21,6 @@
     <!-- L'appareil photo est facultatif : l'app se contente d'un intent système. -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
-    <queries>
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:mimeType="application/pdf" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.SEND" />
-            <data android:mimeType="*/*" />
-        </intent>
-    </queries>
-
     <application
         android:name=".PdfBoxApp"
         android:allowBackup="true"
@@ -64,8 +50,15 @@
             <intent-filter android:label="@string/open_with_pdfbox">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:mimeType="application/pdf" />
+                <!--
+                  Pas de catégorie BROWSABLE : l'application n'ouvre pas de lien
+                  web, seulement un fichier local désigné par un gestionnaire de
+                  fichiers ou une messagerie. Les schémas sont explicites, faute
+                  de quoi le filtre se déclare capable d'ouvrir n'importe quelle
+                  URL de type PDF, y compris distante.
+                -->
+                <data android:scheme="content" android:mimeType="application/pdf" />
+                <data android:scheme="file" android:mimeType="application/pdf" />
             </intent-filter>
 
             <!-- Recevoir un partage : PDF, facture .zip, XML, image -->
