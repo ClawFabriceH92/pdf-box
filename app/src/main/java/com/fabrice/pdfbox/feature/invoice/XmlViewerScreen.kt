@@ -289,7 +289,8 @@ private fun XmlRow(
 
 private fun renderNode(node: XmlNode, query: String): AnnotatedString = buildAnnotatedString {
     withStyle(SpanStyle(color = TagColor, fontWeight = FontWeight.Medium)) {
-        append("<").append(node.displayName)
+        append("<")
+        append(node.displayName)
     }
     node.attributes.take(6).forEach { (name, value) ->
         append(" ")

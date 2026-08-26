@@ -126,8 +126,8 @@ fun InvoiceScreen(
                         TextButton(onClick = { onOpenPdf(doc) }) { Text("Ouvrir le PDF") }
                     }
                     TextButton(onClick = {
-                        val file = File(doc.parsedUri.path ?: return@TextButton)
-                        if (file.exists()) {
+                        val file = doc.parsedUri.path?.let(::File)
+                        if (file != null && file.exists()) {
                             Sharing.shareFile(
                                 context, file,
                                 if (doc.pageCount > 0) "application/pdf" else "text/xml",
