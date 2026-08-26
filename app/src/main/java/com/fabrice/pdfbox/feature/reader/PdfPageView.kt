@@ -13,9 +13,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,9 +65,13 @@ fun PdfPageView(
     onTap: (Float, Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val bitmap by produceState<android.graphics.Bitmap?>(initialValue = null, index, widthPx) {
-        value = null
-        value = reader.bitmap(index, widthPx)
+    // Rendu asynchrone. `produceState` ferait la même chose en une ligne, mais
+    // son contrôle lint ne reconnaît pas l'affectation de `value` et signale une
+    // erreur ; l'écriture explicite dit de toute façon plus clairement que la
+    // page repart de zéro quand l'index ou la largeur changent.
+    var bitmap by remember(index, widthPx) { mutableStateOf<android.graphics.Bitmap?>(null) }
+    LaunchedEffect(index, widthPx) {
+        bitmap = reader.bitmap(index, widthPx)
     }
 
     var dragStart by remember(index) { mutableStateOf<Offset?>(null) }

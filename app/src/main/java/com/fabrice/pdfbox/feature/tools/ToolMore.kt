@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -260,7 +261,7 @@ fun ToImageDialog(app: AppViewModel, doc: Doc?, onClose: () -> Unit) {
     val context = LocalContext.current
     if (doc == null) return
     var range by remember { mutableStateOf("1") }
-    var dpi by remember { mutableStateOf(200f) }
+    var dpi by remember { mutableFloatStateOf(200f) }
     var format by remember { mutableStateOf(ImageIo.Format.PNG) }
     val pages = PageRanges.parse(range, doc.pageCount)
 
@@ -310,7 +311,7 @@ fun ToImageDialog(app: AppViewModel, doc: Doc?, onClose: () -> Unit) {
 fun FromImagesDialog(app: AppViewModel, onClose: () -> Unit) {
     val context = LocalContext.current
     val picked = remember { mutableStateListOf<android.net.Uri>() }
-    var quality by remember { mutableStateOf(0.85f) }
+    var quality by remember { mutableFloatStateOf(0.85f) }
 
     val picker = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
@@ -415,7 +416,7 @@ fun OcrDialog(app: AppViewModel, doc: Doc?, searchable: Boolean, onClose: () -> 
     val context = LocalContext.current
     if (doc == null) return
     var range by remember { mutableStateOf("") }
-    var dpi by remember { mutableStateOf(200f) }
+    var dpi by remember { mutableFloatStateOf(200f) }
     val pages = PageRanges.parse(range, doc.pageCount)
 
     ToolDialog(

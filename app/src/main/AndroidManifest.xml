@@ -4,7 +4,7 @@
 
     <!--
       Notifications : uniquement pour signaler la fin d'un OCR ou d'un export
-      long, exécuté par WorkManager. Refusée, l'application fonctionne à
+      long. Refusée, l'application fonctionne à
       l'identique — seul l'avis de fin manque.
     -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />

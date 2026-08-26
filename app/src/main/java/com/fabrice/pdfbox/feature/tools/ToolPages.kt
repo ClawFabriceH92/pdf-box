@@ -34,6 +34,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -205,7 +207,7 @@ fun PageToolDialog(app: AppViewModel, doc: Doc?, mode: PageToolMode, onClose: ()
     val context = LocalContext.current
     if (doc == null) return
     var range by remember { mutableStateOf("") }
-    var degrees by remember { mutableStateOf(90) }
+    var degrees by remember { mutableIntStateOf(90) }
     val pages = PageRanges.parse(range, doc.pageCount)
 
     ToolDialog(
@@ -408,11 +410,11 @@ fun WatermarkDialog(app: AppViewModel, doc: Doc?, onClose: () -> Unit) {
     var text by remember { mutableStateOf("CONFIDENTIEL") }
     var imageUri by remember { mutableStateOf<android.net.Uri?>(null) }
     var anchor by remember { mutableStateOf(Anchor.CENTER) }
-    var rotation by remember { mutableStateOf(45f) }
-    var opacity by remember { mutableStateOf(0.25f) }
-    var scale by remember { mutableStateOf(0.6f) }
+    var rotation by remember { mutableFloatStateOf(45f) }
+    var opacity by remember { mutableFloatStateOf(0.25f) }
+    var scale by remember { mutableFloatStateOf(0.6f) }
     var tiled by remember { mutableStateOf(false) }
-    var colorIndex by remember { mutableStateOf(0) }
+    var colorIndex by remember { mutableIntStateOf(0) }
     var range by remember { mutableStateOf("") }
 
     val imagePicker = androidx.activity.compose.rememberLauncherForActivityResult(

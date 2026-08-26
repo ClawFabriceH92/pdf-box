@@ -36,6 +36,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -89,7 +90,7 @@ fun XmlViewerScreen(
     val collapsed = remember(file.path) { mutableStateOf(setOf<String>()) }
     var query by remember(file.path) { mutableStateOf("") }
     var searchVisible by remember(file.path) { mutableStateOf(false) }
-    var matchIndex by remember(file.path) { mutableStateOf(0) }
+    var matchIndex by remember(file.path) { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
 
     LaunchedEffect(file.path) {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.LruCache
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -46,7 +47,7 @@ class ReaderViewModel : ViewModel() {
 
     var doc by mutableStateOf<Doc?>(null)
         private set
-    var pageCount by mutableStateOf(0)
+    var pageCount by mutableIntStateOf(0)
         private set
     var pageRatios by mutableStateOf<List<Float>>(emptyList())
         private set
@@ -62,8 +63,8 @@ class ReaderViewModel : ViewModel() {
     var annotations by mutableStateOf<List<Annot>>(emptyList())
         private set
     var mode by mutableStateOf(ReaderMode.READ)
-    var highlightColor by mutableStateOf(0xFFFFEB3B.toInt())
-    var currentPage by mutableStateOf(0)
+    var highlightColor by mutableIntStateOf(0xFFFFEB3B.toInt())
+    var currentPage by mutableIntStateOf(0)
     var fullscreen by mutableStateOf(false)
     var showThumbnails by mutableStateOf(false)
 
@@ -71,7 +72,7 @@ class ReaderViewModel : ViewModel() {
         private set
     var searchHits by mutableStateOf<List<DocSearchHit>>(emptyList())
         private set
-    var searchIndex by mutableStateOf(-1)
+    var searchIndex by mutableIntStateOf(-1)
         private set
     var searching by mutableStateOf(false)
         private set

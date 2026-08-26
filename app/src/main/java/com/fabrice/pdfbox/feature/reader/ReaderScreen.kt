@@ -46,7 +46,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -131,9 +134,9 @@ fun ReaderScreen(
     var noteTarget by remember(doc.id) { mutableStateOf<Pair<Int, Offset>?>(null) }
     var signatureTarget by remember(doc.id) { mutableStateOf<Pair<Int, Offset>?>(null) }
 
-    var scale by remember(doc.id) { mutableStateOf(1f) }
+    var scale by remember(doc.id) { mutableFloatStateOf(1f) }
     var offset by remember(doc.id) { mutableStateOf(Offset.Zero) }
-    var containerWidth by remember { mutableStateOf(0) }
+    var containerWidth by remember { mutableIntStateOf(0) }
 
     val listState = rememberLazyListState()
     val annotationsByPage = remember(reader.annotations) { reader.annotations.groupBy { it.page } }
@@ -249,8 +252,13 @@ fun ReaderScreen(
                 }
             }
 
+            // `firstVisibleItemIndex` change à chaque pixel de défilement :
+            // le lire directement recomposerait tout le lecteur en continu.
+            val visiblePage by remember {
+                derivedStateOf { listState.firstVisibleItemIndex + 1 }
+            }
             PageBadge(
-                current = listState.firstVisibleItemIndex + 1,
+                current = visiblePage,
                 total = reader.pageCount,
                 scale = scale,
                 fullscreen = reader.fullscreen,
@@ -556,9 +564,10 @@ private fun ThumbnailStrip(reader: ReaderViewModel, onSelect: (Int) -> Unit) {
                             )
                             .clickable { onSelect(index) }
                     ) {
-                        val thumb by androidx.compose.runtime.produceState<android.graphics.Bitmap?>(
-                            initialValue = null, index
-                        ) { value = reader.bitmap(index, 256) }
+                        var thumb by remember(index) {
+                            mutableStateOf<android.graphics.Bitmap?>(null)
+                        }
+                        LaunchedEffect(index) { thumb = reader.bitmap(index, 256) }
                         thumb?.let {
                             androidx.compose.foundation.Image(
                                 bitmap = it.asImageBitmap(),
