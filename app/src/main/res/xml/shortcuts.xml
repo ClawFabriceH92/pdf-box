@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="import"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_import"
+        android:shortcutShortLabel="@string/shortcut_import_short"
+        android:shortcutLongLabel="@string/shortcut_import_long">
+        <intent
+            android:action="com.fabrice.pdfbox.action.IMPORT"
+            android:targetPackage="com.fabrice.pdfbox"
+            android:targetClass="com.fabrice.pdfbox.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="tools"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_tools"
+        android:shortcutShortLabel="@string/shortcut_tools_short"
+        android:shortcutLongLabel="@string/shortcut_tools_long">
+        <intent
+            android:action="com.fabrice.pdfbox.action.TOOLS"
+            android:targetPackage="com.fabrice.pdfbox"
+            android:targetClass="com.fabrice.pdfbox.MainActivity" />
+    </shortcut>
+</shortcuts>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      L'interface est en français et écrite directement dans le code Compose :
+      seules les chaînes que le *système* affiche (nom de l'app, libellés des
+      intents et des raccourcis, canal de notification) doivent être des
+      ressources. Le reste vivrait ici sans jamais être traduit.
+    -->
+    <string name="app_name">PDF Box</string>
+    <string name="open_with_pdfbox">Ouvrir dans PDF Box</string>
+    <string name="send_to_pdfbox">Importer dans PDF Box</string>
+
+    <string name="shortcut_import_short">Importer</string>
+    <string name="shortcut_import_long">Importer un document</string>
+    <string name="shortcut_tools_short">Outils</string>
+    <string name="shortcut_tools_long">Boîte à outils PDF</string>
+
+    <string name="notif_channel_tasks">Traitements</string>
+    <string name="notif_channel_tasks_desc">Progression et fin des OCR et des exports longs</string>
+</resources>
