@@ -264,12 +264,12 @@ fun LibraryScreen(
 private fun SearchHeader(app: AppViewModel) {
     OutlinedTextField(
         value = app.query,
-        onValueChange = { app.setQuery(it) },
+        onValueChange = { app.updateQuery(it) },
         placeholder = { Text("Rechercher : nom, étiquette, contenu…") },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
         trailingIcon = {
             if (app.query.isNotEmpty()) {
-                IconButton(onClick = { app.setQuery("") }) {
+                IconButton(onClick = { app.updateQuery("") }) {
                     Icon(Icons.Default.Clear, contentDescription = "Effacer")
                 }
             }
@@ -293,7 +293,7 @@ private fun FilterRow(app: AppViewModel, onStats: () -> Unit, onDuplicates: () -
                 SortOrder.entries.forEach { order ->
                     DropdownMenuItem(
                         text = { Text(order.label) },
-                        onClick = { app.setSort(order); sortMenu = false }
+                        onClick = { app.updateSort(order); sortMenu = false }
                     )
                 }
             }
@@ -307,7 +307,7 @@ private fun FilterRow(app: AppViewModel, onStats: () -> Unit, onDuplicates: () -
                 val tag = app.tags[index]
                 FilterChip(
                     selected = app.tagFilter == tag,
-                    onClick = { app.setTagFilter(if (app.tagFilter == tag) null else tag) },
+                    onClick = { app.updateTagFilter(if (app.tagFilter == tag) null else tag) },
                     label = { Text(tag) }
                 )
             }

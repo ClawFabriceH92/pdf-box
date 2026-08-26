@@ -84,7 +84,7 @@ class AppViewModel : ViewModel() {
 
     // ---------------------------------------------------------------- recherche
 
-    fun setQuery(value: String) {
+    fun updateQuery(value: String) {
         query = value
         viewModelScope.launch {
             fullTextHits = if (value.length < 2) emptyMap()
@@ -92,8 +92,8 @@ class AppViewModel : ViewModel() {
         }
     }
 
-    fun setSort(value: SortOrder) { sort = value }
-    fun setTagFilter(value: String?) { tagFilter = value }
+    fun updateSort(value: SortOrder) { sort = value }
+    fun updateTagFilter(value: String?) { tagFilter = value }
 
     /**
      * U6 — la barre de recherche filtre à la fois sur le nom et sur le contenu
