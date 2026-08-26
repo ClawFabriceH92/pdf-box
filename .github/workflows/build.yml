@@ -1,0 +1,137 @@
+# Vérifications + build APK + publication de la release.
+# - push / pull request sur n'importe quelle branche → tests, lint, APK en artefact
+# - push sur la branche par défaut                   → release flottante "latest"
+# - tag v*                                           → release versionnée
+#
+# Signature : clé de CI si les secrets PDFBOX_KEYSTORE_* existent, sinon la clé
+# publique versionnée. Dans les deux cas la signature est stable d'un build à
+# l'autre, condition pour que l'APK s'installe par-dessus le précédent.
+name: Build APK
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PDFBOX_KEYSTORE_B64: ${{ secrets.PDFBOX_KEYSTORE_B64 }}
+      PDFBOX_KEYSTORE_PASSWORD: ${{ secrets.PDFBOX_KEYSTORE_PASSWORD }}
+      PDFBOX_KEY_PASSWORD: ${{ secrets.PDFBOX_KEY_PASSWORD }}
+      PDFBOX_KEY_ALIAS: ${{ secrets.PDFBOX_KEY_ALIAS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle (avec cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install Android SDK 35
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.1"
+
+      - name: Déterminer la version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "GRADLE_VERSION_ARG=-PpdfboxVersionName=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "GRADLE_VERSION_ARG=" >> "$GITHUB_ENV"
+          fi
+
+      - name: Tests unitaires
+        run: ./gradlew testDebugUnitTest $GRADLE_VERSION_ARG
+
+      - name: Rapport de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: app/build/reports/tests/testDebugUnitTest
+          if-no-files-found: ignore
+
+      # Les *erreurs* lint bloquent (API trop récente, permission manquante,
+      # ressource absente) ; les avertissements restent informatifs.
+      - name: Lint
+        run: ./gradlew lintRelease $GRADLE_VERSION_ARG
+
+      - name: Rapport lint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-release.html
+          if-no-files-found: ignore
+
+      - name: Build APK signé
+        run: ./gradlew assembleRelease $GRADLE_VERSION_ARG
+
+      - name: Nommer l'APK
+        run: |
+          VER=$(./gradlew -q --console=plain $GRADLE_VERSION_ARG printVersionName | tail -1)
+          echo "APP_VERSION=$VER" >> "$GITHUB_ENV"
+          cp app/build/outputs/apk/release/app-release.apk "pdf-box-v${VER}.apk"
+          ls -l "pdf-box-v${VER}.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-box-apk
+          path: pdf-box-v*.apk
+          if-no-files-found: error
+
+      - name: Publier la release "latest"
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # --cleanup-tag : sans ça le tag "latest" resterait figé sur un ancien commit.
+          gh release delete latest --yes --cleanup-tag --repo "${{ github.repository }}" 2>/dev/null || true
+          for i in 1 2 3 4 5; do
+            if gh release create latest "pdf-box-v${APP_VERSION}.apk" \
+              --title "PDF Box — dernier build" \
+              --target "$GITHUB_SHA" \
+              --notes "APK le plus récent, signé et installable sur Android 8.0 (API 26) ou plus. Construit automatiquement à partir de la branche par défaut." \
+              --repo "${{ github.repository }}"; then
+              break
+            fi
+            echo "Échec de la création de la release (tentative $i/5), nouvel essai dans 10 s…"
+            sleep 10
+          done
+
+      - name: Publier la release versionnée
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES_FILE=$(mktemp)
+          python3 tools/changelog-section.py "$GITHUB_REF_NAME" > "$NOTES_FILE" || true
+          if [ ! -s "$NOTES_FILE" ]; then
+            echo "APK $GITHUB_REF_NAME — build automatique signé." > "$NOTES_FILE"
+          fi
+          gh release create "$GITHUB_REF_NAME" "pdf-box-v${APP_VERSION}.apk" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "$NOTES_FILE" \
+            --repo "${{ github.repository }}" \
+          || gh release upload "$GITHUB_REF_NAME" "pdf-box-v${APP_VERSION}.apk" \
+             --clobber --repo "${{ github.repository }}"

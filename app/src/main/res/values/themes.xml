@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Thème de démarrage uniquement : dès `setContent`, Compose prend la main
+      avec sa propre palette Material 3 (voir ui/theme/Theme.kt).
+      Le fond sombre évite le flash blanc au lancement.
+    -->
+    <style name="Theme.PdfBox" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/startup_background</item>
+    </style>
+</resources>
