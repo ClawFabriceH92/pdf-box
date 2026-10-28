@@ -10,14 +10,16 @@ plugins {
 
 /**
  * La version est pilotée par la propriété Gradle `pdfboxVersionName`
- * (la CI la dérive du tag git : `-PpdfboxVersionName=1.2.3`).
+ * (la CI la dérive du tag git : `-PpdfboxVersionName=1.2.3`). Sans tag, c'est
+ * la valeur par défaut ci-dessous : la mise à jour intégrée compare cette
+ * version à celle publiée, il faut donc l'augmenter à chaque livraison.
  * Le versionCode en découle mécaniquement : 1.2.3 -> 10203, donc strictement
  * croissant tant que les versions le sont.
  */
 val appVersionName: String =
     (providers.gradleProperty("pdfboxVersionName").orNull)
         ?.trim()?.removePrefix("v")?.takeIf { it.isNotBlank() }
-        ?: "1.0.0"
+        ?: "1.1.0"
 
 fun versionCodeOf(name: String): Int {
     val parts = name.split("-", "+")[0].split(".").map { it.toIntOrNull() ?: 0 }
@@ -185,4 +187,5 @@ dependencies {
     implementation(libs.mlkit.text.recognition)
 
     testImplementation(libs.junit)
+    testImplementation(libs.org.json)
 }

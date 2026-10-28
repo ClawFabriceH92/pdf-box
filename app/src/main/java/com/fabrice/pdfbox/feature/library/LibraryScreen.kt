@@ -55,8 +55,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.fabrice.pdfbox.R
 import com.fabrice.pdfbox.core.data.Doc
 import com.fabrice.pdfbox.core.data.SortOrder
 import com.fabrice.pdfbox.core.pdf.PdfSource
@@ -86,7 +89,8 @@ val IMPORT_MIME_TYPES = arrayOf(
 fun LibraryScreen(
     app: AppViewModel,
     onOpenDoc: (Doc) -> Unit,
-    onOpenInvoice: (Doc) -> Unit
+    onOpenInvoice: (Doc) -> Unit,
+    onCheckUpdate: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
@@ -114,6 +118,7 @@ fun LibraryScreen(
         }
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
+            AppTitle(onCheckUpdate)
             SearchHeader(app)
             FilterRow(
                 app = app,
@@ -257,6 +262,26 @@ fun LibraryScreen(
 
     if (showStats) {
         StatsDialog(app = app, onDismiss = { showStats = false })
+    }
+}
+
+/** Nom de l'application, et la vérification manuelle des mises à jour. */
+@Composable
+private fun AppTitle(onCheckUpdate: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            stringResource(R.string.app_name),
+            style = MaterialTheme.typography.titleLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        IconButton(onClick = onCheckUpdate) {
+            Icon(Icons.Default.Refresh, contentDescription = "Vérifier les mises à jour")
+        }
     }
 }
 

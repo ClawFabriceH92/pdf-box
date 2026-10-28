@@ -31,9 +31,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fabrice.pdfbox.core.data.Doc
+import com.fabrice.pdfbox.core.update.UpdateManager
 import com.fabrice.pdfbox.feature.common.AppViewModel
 import com.fabrice.pdfbox.feature.common.MessageBar
 import com.fabrice.pdfbox.feature.common.TaskProgress
+import com.fabrice.pdfbox.feature.common.UpdateDialog
 import com.fabrice.pdfbox.feature.invoice.InvoiceScreen
 import com.fabrice.pdfbox.feature.library.LibraryScreen
 import com.fabrice.pdfbox.feature.reader.AnnotationsScreen
@@ -41,6 +43,7 @@ import com.fabrice.pdfbox.feature.reader.ReaderScreen
 import com.fabrice.pdfbox.feature.reader.ReaderViewModel
 import com.fabrice.pdfbox.feature.tools.ToolsScreen
 import com.fabrice.pdfbox.ui.theme.PdfBoxTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
@@ -131,6 +134,17 @@ fun AppRoot() {
         }
     }
 
+    val updateState by UpdateManager.state.collectAsState()
+    // Une vérification au lancement, puis toutes les 30 minutes tant que l'app
+    // reste ouverte ; le gestionnaire garde son propre plancher d'une heure.
+    val appContext = context.applicationContext
+    LaunchedEffect(Unit) {
+        while (true) {
+            UpdateManager.checkAtLaunch(appContext)
+            delay(30 * 60_000L)
+        }
+    }
+
     LaunchedEffect(imports) {
         if (imports.isNotEmpty()) {
             MainActivity.pendingImports.value = emptyList()
@@ -188,7 +202,8 @@ fun AppRoot() {
                 Tab.LIBRARY -> LibraryScreen(
                     app = app,
                     onOpenDoc = { tab = Tab.READER },
-                    onOpenInvoice = { showInvoice = true }
+                    onOpenInvoice = { showInvoice = true },
+                    onCheckUpdate = { UpdateManager.checkNow(appContext) }
                 )
                 Tab.READER -> ReaderScreen(
                     app = app,
@@ -211,4 +226,15 @@ fun AppRoot() {
             }
         }
     }
+
+    UpdateDialog(
+        state = updateState,
+        onDownload = { UpdateManager.download(context) },
+        onInstall = {
+            if (UpdateManager.canInstall(context)) UpdateManager.install(context)
+            else UpdateManager.openInstallSettings(context)
+        },
+        onAllow = { UpdateManager.openInstallSettings(context) },
+        onDismiss = { UpdateManager.dismiss() },
+    )
 }

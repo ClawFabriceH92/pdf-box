@@ -13,6 +13,7 @@ exifinterface = "1.3.7"
 pdfboxAndroid = "2.0.27.0"
 mlkitText = "16.0.1"
 junit = "4.13.2"
+orgJson = "20231013"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -41,6 +42,8 @@ pdfbox-android = { module = "com.tom-roush:pdfbox-android", version.ref = "pdfbo
 mlkit-text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "mlkitText" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
+# org.json n'est qu'un bouchon dans les tests unitaires Android.
+org-json = { module = "org.json:json", version.ref = "orgJson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

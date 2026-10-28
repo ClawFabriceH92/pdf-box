@@ -1,12 +1,13 @@
-# PDF Box
+# PDF Box by Fabrice Heuvrard
 
 Boîte à outils PDF **100 % locale** pour Android : lire, annoter, recouper,
 fusionner, masquer, extraire du texte, lire des factures électroniques et leurs
-XML — sans compte, sans cloud, sans connexion.
+XML — sans compte, sans cloud.
 
-> L'application fonctionne en mode avion. Ce n'est pas une intention : les
-> permissions réseau que les bibliothèques embarquées déclarent sont **retirées
-> de l'APK**, et le système refuse donc toute socket au code de l'application.
+> L'application fonctionne en mode avion. Sa seule connexion réseau est la
+> **mise à jour intégrée** : lire `version.json` sur la release GitHub `latest`
+> et télécharger l'APK. Aucun document, aucun texte extrait ne quitte le
+> téléphone.
 
 ## Installation
 
@@ -17,6 +18,19 @@ L'APK signé est publié par la CI à chaque build de la branche par défaut :
 Android 8.0 (API 26) minimum. L'installation hors Play Store demande d'autoriser
 « Installer des applications inconnues » pour le navigateur ou le gestionnaire de
 fichiers qui ouvre l'APK.
+
+### Mises à jour
+
+Même système que *Notes de frais* : au lancement (puis au plus une fois par
+heure), l'application lit `version.json` publié par la CI à côté de l'APK dans
+la release `latest`, et se rabat sur l'API GitHub si ce fichier manque. Si une
+version plus récente existe, elle propose de la télécharger — automatiquement
+en Wi-Fi — puis de l'installer. Le bouton ↻ en tête de la bibliothèque lance la
+vérification à la demande. Le dépôt doit rester public.
+
+La version des builds de la branche par défaut est la valeur par défaut de
+`appVersionName` dans `app/build.gradle.kts` : l'augmenter à chaque livraison,
+sinon la mise à jour ne voit rien de nouveau.
 
 ## Ce que l'application fait
 
@@ -50,11 +64,13 @@ de confirmation de suppression dit à chaque fois ce qui va réellement dispara�
 | Permission | Usage |
 |---|---|
 | `POST_NOTIFICATIONS` (Android 13+) | Signaler la fin d'un OCR ou d'un export long. Refusée, tout fonctionne à l'identique. |
+| `INTERNET`, `ACCESS_NETWORK_STATE` | Mise à jour intégrée uniquement (vérification sur GitHub, téléchargement en Wi-Fi). |
+| `REQUEST_INSTALL_PACKAGES` | Lancer l'installation de la mise à jour téléchargée. |
 
 C'est tout. Pas de permission de stockage : l'accès aux fichiers passe
 exclusivement par le *Storage Access Framework*, c'est-à-dire par une sélection
 explicite de votre part. Pas de permission `CAMERA` : la photo passe par un
-intent système, donc par l'appareil photo du système. Pas d'`INTERNET`.
+intent système, donc par l'appareil photo du système.
 
 ## Ce que l'application ne fait pas, et pourquoi
 

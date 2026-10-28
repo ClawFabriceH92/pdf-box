@@ -6,7 +6,8 @@
       intents et des raccourcis, canal de notification) doivent être des
       ressources. Le reste vivrait ici sans jamais être traduit.
     -->
-    <string name="app_name">PDF Box</string>
+    <!-- Nom affiché sous l'icône, dans le sélecteur d'applications et en tête de la bibliothèque. -->
+    <string name="app_name">PDF Box by Fabrice Heuvrard</string>
     <string name="open_with_pdfbox">Ouvrir dans PDF Box</string>
     <string name="send_to_pdfbox">Importer dans PDF Box</string>
 

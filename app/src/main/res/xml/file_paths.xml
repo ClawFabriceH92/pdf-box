@@ -2,6 +2,7 @@
 <paths>
     <files-path name="exports" path="exports/" />
     <files-path name="library" path="library/" />
+    <files-path name="updates" path="updates/" />
     <cache-path name="cache" path="." />
     <external-files-path name="ext" path="." />
 </paths>
