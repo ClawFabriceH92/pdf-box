@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fabrice.pdfbox.core.data.Doc
 import com.fabrice.pdfbox.core.update.UpdateManager
+import com.fabrice.pdfbox.feature.common.AppTopBar
 import com.fabrice.pdfbox.feature.common.AppViewModel
 import com.fabrice.pdfbox.feature.common.MessageBar
 import com.fabrice.pdfbox.feature.common.TaskProgress
@@ -163,6 +165,16 @@ fun AppRoot() {
     }
 
     Scaffold(
+        // Le lecteur garde sa propre barre (titre du document) : la place y
+        // va aux pages. Partout ailleurs, le nom de l'application est affiché.
+        topBar = {
+            if (tab != Tab.READER || showInvoice) {
+                AppTopBar(
+                    screen = if (showInvoice) "Facture" else tab.label,
+                    onCheckUpdate = { UpdateManager.checkNow(appContext) }
+                )
+            }
+        },
         bottomBar = {
             if (!(tab == Tab.READER && reader.fullscreen)) {
                 NavigationBar {
@@ -178,7 +190,10 @@ fun AppRoot() {
             }
         }
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
+        // consumeWindowInsets : sans lui, l'écran Bibliothèque (qui a son propre
+        // Scaffold pour le bouton « Importer ») rajoutait les marges système
+        // une seconde fois, en haut et au-dessus de la barre d'onglets.
+        Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
             app.message?.let { message ->
                 MessageBar(
                     message = message.text,
@@ -202,8 +217,7 @@ fun AppRoot() {
                 Tab.LIBRARY -> LibraryScreen(
                     app = app,
                     onOpenDoc = { tab = Tab.READER },
-                    onOpenInvoice = { showInvoice = true },
-                    onCheckUpdate = { UpdateManager.checkNow(appContext) }
+                    onOpenInvoice = { showInvoice = true }
                 )
                 Tab.READER -> ReaderScreen(
                     app = app,

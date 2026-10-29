@@ -1,5 +1,20 @@
 # Journal des versions
 
+## 1.1.1
+
+**Ergonomie**
+- Barre du haut commune à la Bibliothèque, aux Annotations, aux Outils et à la
+  fiche Facture : « PDF Box » sur la première ligne, « by Fabrice Heuvrard ·
+  nom de l’écran » sur la seconde. En 1.1.0 le nom n'apparaissait que dans la
+  bibliothèque, sur une ligne tronquée sur la plupart des téléphones.
+- Menu ⋮ de cette barre : « Vérifier les mises à jour » et « À propos »
+  (nom, auteur, version installée).
+- Bibliothèque : « Chercher les doublons » et « Statistiques » regroupés dans
+  un menu nommé ; la même icône ↻ servait à la fois aux doublons et aux mises
+  à jour.
+- Marges système appliquées une seule fois : la bibliothèque, qui a son propre
+  Scaffold, les ajoutait une seconde fois en haut et en bas.
+
 ## 1.1.0
 
 - L'application s'appelle désormais **PDF Box by Fabrice Heuvrard** (icône,

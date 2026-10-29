@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,11 +56,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.fabrice.pdfbox.R
 import com.fabrice.pdfbox.core.data.Doc
 import com.fabrice.pdfbox.core.data.SortOrder
 import com.fabrice.pdfbox.core.pdf.PdfSource
@@ -89,8 +87,7 @@ val IMPORT_MIME_TYPES = arrayOf(
 fun LibraryScreen(
     app: AppViewModel,
     onOpenDoc: (Doc) -> Unit,
-    onOpenInvoice: (Doc) -> Unit,
-    onCheckUpdate: () -> Unit
+    onOpenInvoice: (Doc) -> Unit
 ) {
     val context = LocalContext.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
@@ -109,6 +106,8 @@ fun LibraryScreen(
     ) { uris -> app.importUris(context, uris, persistable = true) }
 
     Scaffold(
+        // Les marges système sont déjà appliquées par le Scaffold principal.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { picker.launch(IMPORT_MIME_TYPES) },
@@ -118,7 +117,6 @@ fun LibraryScreen(
         }
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            AppTitle(onCheckUpdate)
             SearchHeader(app)
             FilterRow(
                 app = app,
@@ -265,26 +263,6 @@ fun LibraryScreen(
     }
 }
 
-/** Nom de l'application, et la vérification manuelle des mises à jour. */
-@Composable
-private fun AppTitle(onCheckUpdate: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            stringResource(R.string.app_name),
-            style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-        IconButton(onClick = onCheckUpdate) {
-            Icon(Icons.Default.Refresh, contentDescription = "Vérifier les mises à jour")
-        }
-    }
-}
-
 @Composable
 private fun SearchHeader(app: AppViewModel) {
     OutlinedTextField(
@@ -337,11 +315,24 @@ private fun FilterRow(app: AppViewModel, onStats: () -> Unit, onDuplicates: () -
                 )
             }
         }
-        IconButton(onClick = onDuplicates) {
-            Icon(Icons.Default.Refresh, contentDescription = "Chercher les doublons")
-        }
-        IconButton(onClick = onStats) {
-            Icon(Icons.Default.Info, contentDescription = "Statistiques")
+        // Deux actions rares : un menu nommé vaut mieux que deux icônes à deviner.
+        var moreMenu by remember { mutableStateOf(false) }
+        Box {
+            IconButton(onClick = { moreMenu = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "Plus d'actions sur la bibliothèque")
+            }
+            DropdownMenu(expanded = moreMenu, onDismissRequest = { moreMenu = false }) {
+                DropdownMenuItem(
+                    text = { Text("Chercher les doublons") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    onClick = { moreMenu = false; onDuplicates() }
+                )
+                DropdownMenuItem(
+                    text = { Text("Statistiques") },
+                    leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
+                    onClick = { moreMenu = false; onStats() }
+                )
+            }
         }
     }
 }

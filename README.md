@@ -25,8 +25,9 @@ Même système que *Notes de frais* : au lancement (puis au plus une fois par
 heure), l'application lit `version.json` publié par la CI à côté de l'APK dans
 la release `latest`, et se rabat sur l'API GitHub si ce fichier manque. Si une
 version plus récente existe, elle propose de la télécharger — automatiquement
-en Wi-Fi — puis de l'installer. Le bouton ↻ en tête de la bibliothèque lance la
-vérification à la demande. Le dépôt doit rester public.
+en Wi-Fi — puis de l'installer. Le menu ⋮ de la barre du haut ▸ « Vérifier les
+mises à jour » lance la vérification à la demande ; « À propos » affiche la
+version installée. Le dépôt doit rester public.
 
 La version des builds de la branche par défaut est la valeur par défaut de
 `appVersionName` dans `app/build.gradle.kts` : l'augmenter à chaque livraison,

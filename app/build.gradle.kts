@@ -19,7 +19,7 @@ plugins {
 val appVersionName: String =
     (providers.gradleProperty("pdfboxVersionName").orNull)
         ?.trim()?.removePrefix("v")?.takeIf { it.isNotBlank() }
-        ?: "1.1.0"
+        ?: "1.1.1"
 
 fun versionCodeOf(name: String): Int {
     val parts = name.split("-", "+")[0].split(".").map { it.toIntOrNull() ?: 0 }
