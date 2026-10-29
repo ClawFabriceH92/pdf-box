@@ -13,7 +13,7 @@ Cas d'usage déclencheurl :
 
 ## 2. Principes contraignants
 
-- **Mobile local uniquement** : aucun upload, aucun compte, aucune dépendance réseau (l'app fonctionne en mode avion).
+- **Mobile local uniquement** : aucun upload, aucun compte, aucune dépendance réseau (l'app fonctionne en mode avion). Seule exception : la mise à jour intégrée (lecture de `version.json` et téléchargement de l'APK sur GitHub).
 - **Un seul APK**, Kotlin + Jetpack Compose.
 - **OCR local** : Google ML Kit (téléphoné sur l'appareil), aucune API cloud.
 - **Accès fichiers via SAF** (Storage Access Framework) : pas de permission totale de stockage (API 30+ ne l'impose pas) ; l'utilisateur choisit ses dossiers, l'app les mémorise via `takePersistableUriPermission`.
@@ -121,7 +121,7 @@ Cas d'usage déclencheurl :
 - **Permissions** :
   - `WRITE_EXTERNAL_STORAGE` / `READ_EXTERNAL_STORAGE` : **non** (SAF uniquement, API 30+).
   - `CAMERA` : optionnelle (P2, scanner photo).
-  - `INTERNET` : **non requise** (tout est local — mais ML Kit peut pré-télécharger ses packages → on l'autorise avec mode offline par défaut).
+  - `INTERNET` / `ACCESS_NETWORK_STATE` / `REQUEST_INSTALL_PACKAGES` : **mise à jour intégrée uniquement** (même système que Notes de frais) ; aucun traitement de document n'utilise le réseau.
 - **Arborescence** (Android)
 ```
 app/
@@ -145,7 +145,7 @@ app/
 
 ## 5. Sécurité & Confidentialité
 
-- **Zéro réseau** par défaut (aucune URL, aucun endpoint).
+- **Zéro réseau** pour les documents : la seule URL est celle des releases GitHub de PDF Box (mise à jour).
 - **Zéro secret** (pas de login, pas de PIN en v1).
 - Fichiers **restent sur le téléphone** ; rien n'est copié hors de l'app.
 - OCR **100 % local** (ML Kit on-device — pas de `GmsApiClient`).
@@ -201,7 +201,7 @@ Tests concrets (téléphone Android 8.0+ ou émulateur API 26) :
 - [ ] Partage d'un PDF depuis une autre app (Partager → PDF Box) → import OK.
 - [ ] Mode avion test : toutes les fonctions P0 passent.
 - [ ] Suppression d'un doc → confirmation → disparaît du FS.
-- [ ] Aucune alerte de permission réseau.
+- [ ] Réseau limité à la mise à jour intégrée (aucun autre endpoint).
 - [ ] Build release sur Android 14 (API 34) → sans crash.
 
 ## 10. Versions

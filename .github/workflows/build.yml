@@ -105,13 +105,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          APK="pdf-box-v${APP_VERSION}.apk"
+          # Manifeste lu par la mise à jour intégrée (UpdateChecker) avant l'API
+          # GitHub : le téléchargement d'un asset n'a pas de quota horaire par IP.
+          # Le titre porte la version, c'est le repli quand le manifeste manque.
+          printf '{"version":"%s","notes":"Build automatique - v%s","apk":"%s"}\n' \
+            "$APP_VERSION" "$APP_VERSION" \
+            "https://github.com/${{ github.repository }}/releases/download/latest/${APK}" \
+            > version.json
           # --cleanup-tag : sans ça le tag "latest" resterait figé sur un ancien commit.
           gh release delete latest --yes --cleanup-tag --repo "${{ github.repository }}" 2>/dev/null || true
           for i in 1 2 3 4 5; do
-            if gh release create latest "pdf-box-v${APP_VERSION}.apk" \
-              --title "PDF Box — dernier build" \
+            if gh release create latest "$APK" version.json \
+              --title "PDF Box by Fabrice Heuvrard v${APP_VERSION}" \
               --target "$GITHUB_SHA" \
-              --notes "APK le plus récent, signé et installable sur Android 8.0 (API 26) ou plus. Construit automatiquement à partir de la branche par défaut." \
+              --notes "APK le plus récent (v${APP_VERSION}), signé et installable sur Android 8.0 (API 26) ou plus. Construit automatiquement à partir de la branche par défaut." \
               --repo "${{ github.repository }}"; then
               break
             fi

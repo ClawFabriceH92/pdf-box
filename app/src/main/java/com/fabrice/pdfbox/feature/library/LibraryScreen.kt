@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -105,6 +106,8 @@ fun LibraryScreen(
     ) { uris -> app.importUris(context, uris, persistable = true) }
 
     Scaffold(
+        // Les marges système sont déjà appliquées par le Scaffold principal.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { picker.launch(IMPORT_MIME_TYPES) },
@@ -312,11 +315,24 @@ private fun FilterRow(app: AppViewModel, onStats: () -> Unit, onDuplicates: () -
                 )
             }
         }
-        IconButton(onClick = onDuplicates) {
-            Icon(Icons.Default.Refresh, contentDescription = "Chercher les doublons")
-        }
-        IconButton(onClick = onStats) {
-            Icon(Icons.Default.Info, contentDescription = "Statistiques")
+        // Deux actions rares : un menu nommé vaut mieux que deux icônes à deviner.
+        var moreMenu by remember { mutableStateOf(false) }
+        Box {
+            IconButton(onClick = { moreMenu = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "Plus d'actions sur la bibliothèque")
+            }
+            DropdownMenu(expanded = moreMenu, onDismissRequest = { moreMenu = false }) {
+                DropdownMenuItem(
+                    text = { Text("Chercher les doublons") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    onClick = { moreMenu = false; onDuplicates() }
+                )
+                DropdownMenuItem(
+                    text = { Text("Statistiques") },
+                    leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
+                    onClick = { moreMenu = false; onStats() }
+                )
+            }
         }
     }
 }
